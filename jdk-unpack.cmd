@@ -1,12 +1,15 @@
 @echo off
 setlocal
 
-set sz=%ProgramFiles%\7-Zip\7zG.exe
 set file=%~f1
 set dir=%file:~0,-4%
 
 if exist "%dir%" goto :err1
 if not exist "%file%" goto :err2
+set sz=%ProgramFiles%\7-Zip\7zG.exe
+if not exist "%sz%" set sz=%ProgramW6432%\7-Zip\7zG.exe
+if not exist "%sz%" goto :err3
+
 mkdir "%dir%"
 cd "%dir%"
 mkdir _step1
@@ -27,9 +30,13 @@ bin\unpack200.exe -r "%file%" "%file:~0,-4%jar"
 goto :eof
 
 :err1
-echo output dir already exists
+echo output directory "%dir%" already exists
 exit /b 1
 
 :err2
-echo file does not exist
+echo input file "%file%" does not exist
 exit /b 2
+
+:err3
+echo 7zip was not found
+exit /b 3
